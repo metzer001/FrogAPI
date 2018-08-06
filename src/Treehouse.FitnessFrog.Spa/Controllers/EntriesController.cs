@@ -3,12 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
+using Treehouse.FitnessFrog.Shared.Data;
 using Treehouse.FitnessFrog.Shared.Models;
 
 namespace Treehouse.FitnessFrog.Spa.Controllers
 {
     public class EntriesController : ApiController
     {
+
+        private EntriesRepository _entriesRepository = null;
+
+        public EntriesController(EntriesRepository entriesRepository)
+        {
+            _entriesRepository = entriesRepository;
+
+        }
 
       
         public IEnumerable<Entry> Get()
@@ -31,19 +40,19 @@ namespace Treehouse.FitnessFrog.Spa.Controllers
         }
 
         
-        public void Post()
+        public void Post(Entry entry)
         {
 
         }
 
      
-        public void Put()
+        public void Put(int id, Entry entry)
         {
 
         }
 
         
-        public void Delete()
+        public void Delete(int id)
         {
 
         }
