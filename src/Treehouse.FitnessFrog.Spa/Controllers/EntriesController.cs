@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Http;
 using Treehouse.FitnessFrog.Shared.Data;
 using Treehouse.FitnessFrog.Shared.Models;
+using Treehouse.FitnessFrog.Spa.DTO;
 
 namespace Treehouse.FitnessFrog.Spa.Controllers
 {
@@ -40,9 +41,29 @@ namespace Treehouse.FitnessFrog.Spa.Controllers
         }
 
         
-        public IHttpActionResult Post(Entry entry)
+
+        public IHttpActionResult Post(EntryDto entry)
+
+
         {
-            _entriesRepository.Add(entry);
+            ValidateEntry(entry);
+
+            if (!ModelState.IsValid)
+            {
+
+                return BadRequest(ModelState);
+
+            }
+
+            var entryModel = entry.ToModel();
+
+            _entriesRepository.Add(entryModel);
+
+            entry.Id = entryModel.Id;
+
+
+
+
 
             return Created(
                    Url.Link("DefaultApi",new { controller = "Entries", id = entry.Id }),
@@ -51,10 +72,22 @@ namespace Treehouse.FitnessFrog.Spa.Controllers
         }
 
      
-        public void Put(int id, Entry entry)
+        public IHttpActionResult Put(int id, EntryDto entry)
         {
+            ValidateEntry(entry);
 
-            _entriesRepository.Update(entry);
+            if (!ModelState.IsValid)
+            {
+
+                return BadRequest(ModelState);
+            }
+
+
+
+
+            _entriesRepository.Update(entry.ToModel());
+
+            return StatusCode(System.Net.HttpStatusCode.NoContent);
 
         }
 
@@ -64,6 +97,19 @@ namespace Treehouse.FitnessFrog.Spa.Controllers
 
             _entriesRepository.Delete(id);
 
+        }
+
+
+
+        private void ValidateEntry(EntryDto entry)
+        {
+            // If there aren't any "Duration" field validation errors
+            // then make sure that the duration is greater than "0".
+            if (ModelState.IsValidField("Duration") && entry.Duration <= 0)
+            {
+                ModelState.AddModelError("entry.Duration",
+                    "The Duration field value must be greater than '0'.");
+            }
         }
 
 
